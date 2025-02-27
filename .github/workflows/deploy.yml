@@ -77,6 +77,7 @@ jobs:
           tfplugingen-framework generate all --input ./provider-code-spec.json --output ./internal
           go mod tidy && go install .
           terraform providers schema -json > schema.json
+          cat schema.json
           python3 gen_docs.py
           npx create-docusaurus@latest "terraform provider otc-marketplace | Documentation" classic --typescript
           rm -rf "terraform provider otc-marketplace | Documentation"/docs
