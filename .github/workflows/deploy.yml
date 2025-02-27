@@ -46,7 +46,6 @@ jobs:
 
       - name: Build Docusaurus Documentation
         run: |
-          cd terraform-provider-otc-marketplace
           npx create-docusaurus@latest "terraform provider otc-marketplace | Documentation" classic --typescript
           rm -rf "terraform provider otc-marketplace | Documentation"/docs
           mv docs "terraform provider otc-marketplace | Documentation"
