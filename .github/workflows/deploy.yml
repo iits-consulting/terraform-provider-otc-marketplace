@@ -49,6 +49,11 @@ jobs:
           echo "$(pwd)/tools/tfplugingen-openapi" >> $GITHUB_PATH
           echo "$(pwd)/tools/tfplugingen-framework" >> $GITHUB_PATH
 
+      - name: Generate Terraform definitions
+        run: |
+          tfplugingen-openapi generate --config ./generator_config.yml --output ./provider-code-spec.json ./openapi.yml  && \
+          tfplugingen-framework generate all --input ./provider-code-spec.json --output ./internal
+
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@cb9bde2e2525e640591a934b1fd28eef1dcaf5e5 # v6.2.0
         id: import_gpg
