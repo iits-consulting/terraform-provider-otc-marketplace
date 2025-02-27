@@ -1,4 +1,4 @@
-# Provider: iits.tech/iits-consulting/otc-marketplace
+# Provider: registry.terraform.io/iits-consulting/otc-marketplace
 
 ## Resources
 

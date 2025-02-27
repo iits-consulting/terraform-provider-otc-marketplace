@@ -199,7 +199,7 @@ Replace $USER with your linux/MAC username
 provider_installation {
 
   dev_overrides {
-      "iits.tech/iits-consulting/otc-marketplace" = "/home/$USER/go/bin"
+      "registry.terraform.io/iits-consulting/otc-marketplace" = "/home/$USER/go/bin"
   }
 
   # For all other providers, install them directly from their origin provider

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	opts := providerserver.ServeOpts{
-		Address: "iits.tech/iits-consulting/otc-marketplace",
+		Address: "registry.terraform.io/iits-consulting/otc-marketplace",
 	}
 
 	err := providerserver.Serve(context.Background(), provider_marketplace.New(), opts)
