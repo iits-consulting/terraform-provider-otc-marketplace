@@ -52,8 +52,29 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Download and extract codegen tools
+        run: |
+          mkdir -p tools
+          curl -L -o tools/tfplugingen-openapi.zip \
+            https://github.com/hashicorp/terraform-plugin-codegen-openapi/releases/download/v0.3.0/tfplugingen-openapi_0.3.0_linux_arm64.zip
+          
+          unzip -d tools/tfplugingen-openapi tools/tfplugingen-openapi.zip
+          
+          curl -L -o tools/tfplugingen-framework.zip \
+            https://github.com/hashicorp/terraform-plugin-codegen-framework/releases/download/v0.4.1/tfplugingen-framework_0.4.1_linux_amd64.zip
+          
+          unzip -d tools/tfplugingen-framework tools/tfplugingen-framework.zip
+          rm tools/*.zip
+          
+          # Add the directories containing the binaries to the PATH.
+          # This method writes new PATH entries to $GITHUB_PATH so that they’ll be available in all subsequent steps.
+          echo "$(pwd)/tools/tfplugingen-openapi" >> $GITHUB_PATH
+          echo "$(pwd)/tools/tfplugingen-framework" >> $GITHUB_PATH
+
       - name: Build Docusaurus Documentation
         run: |
+          tfplugingen-openapi generate --config ./generator_config.yml --output ./provider-code-spec.json ./openapi.yml
+          tfplugingen-framework generate all --input ./provider-code-spec.json --output ./internal
           go mod tidy && go install .
           terraform providers schema -json > schema.json
           python3 gen_docs.py
