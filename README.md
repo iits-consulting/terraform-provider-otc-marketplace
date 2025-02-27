@@ -229,11 +229,11 @@ terraform apply
 ## Docs
 
 A reference of the resources and how to use them can either be found in this repo's 
-[Gitlab Pages](https://otc-marketplace-provider-89e03b.pages.iits.tech/) or in the [docs folder](https://gitlab.iits.tech/private/otc-marketplace-provider/-/tree/main/terraform-provider-otc-marketplace/docs)
+[GitHub Pages](https://iits-consulting.github.io/terraform-provider-otc-marketplace/) or in the [docs folder](https://github.com/iits-consulting/terraform-provider-otc-marketplace/tree/main/docs)
 
 ## Contributing
 
 After updating the code, make sure to remove the old docs and run 
 `terraform providers schema -json > schema.json && python3 gen_docs.py`  
 to regen the docs (and check to see if `tfplugindocs` now supports the new 
-protocol so we don't need to use this!).
+protocol, so we don't need to use this!).
