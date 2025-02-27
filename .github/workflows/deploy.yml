@@ -56,7 +56,7 @@ jobs:
         run: |
           mkdir -p tools
           curl -L -o tools/tfplugingen-openapi.zip \
-            https://github.com/hashicorp/terraform-plugin-codegen-openapi/releases/download/v0.3.0/tfplugingen-openapi_0.3.0_linux_arm64.zip
+            https://github.com/hashicorp/terraform-plugin-codegen-openapi/releases/download/v0.3.0/tfplugingen-openapi_0.3.0_linux_amd64.zip
           
           unzip -d tools/tfplugingen-openapi tools/tfplugingen-openapi.zip
           
