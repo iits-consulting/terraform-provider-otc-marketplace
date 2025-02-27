@@ -1,0 +1,1922 @@
+openapi: 3.0.3
+info:
+  title: Seller API
+  version: dev
+servers:
+  - url: /api/v1/seller
+    description: Seller API
+security:
+  - bearerAuth: [ ]
+tags:
+  - name: Authentication
+    description: |
+      Use the `Authorization: Bearer {{AuthToken}}` header for authentication via JWT.
+    externalDocs:
+      url: https://jwt.io/
+  - name: Not Ready
+    description: Endpoints need to be adjusted or don't exist yet
+  - name: Skip Testing
+    description: |
+      Endpoints work correctly, but should be excluded from testing due to technical obstacles
+paths:
+  /login:
+    post:
+      operationId: Login
+      summary: Obtain an authentication token
+      description: |
+        There are two methods of authentication:
+        1. Using username and password.
+        2. Using MFA.
+
+        When authentication is successful, a JWT token is in the body of the response.
+        The client must include this token in the `Authorization: Bearer {{AuthToken}}` header in subsequent requests.
+
+        The JWT token is valid for 24 hours. Its header part contains the expiration date.
+        You can use the [JWT toolset](https://developer.pingidentity.com/en/tools/jwt-decoder.html) to read the headers.
+
+        Depending on the type of authentication, the structure of the request body may be different.
+
+        See the examples section below.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/LoginPassword'
+                - $ref: '#/components/schemas/Login2FA'
+            examples:
+              LoginPassword:
+                $ref: '#/components/examples/LoginPassword'
+              Login2FA:
+                $ref: '#/components/examples/Login2FA'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security: [ ]
+      tags:
+        - Authentication
+  /whoami:
+    get:
+      operationId: WhoAmI
+      summary: Who am I?
+      description: Who am I?
+      responses:
+        '200':
+          description: Who am I?
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhoAmI'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Authentication
+  /projects:
+    get:
+      operationId: ListProjects
+      summary: List Projects in OTC
+      description: List Projects in OTC
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - OTC
+  /projects/{id}:
+    get:
+      operationId: Get Project
+      summary: Get OTC Project
+      description: Get OTC Project
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Project ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal Server Error
+      tags:
+        - OTC
+  /clusters:
+    get:
+      operationId: ListClusters
+      summary: List kubernetes clusters
+      description: List of all available CCE instances for an OTC project
+      parameters:
+        - name: project_id
+          in: query
+          description: ID of the Open Telekom Cloud project
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cluster'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - OTC
+  /namespaces:
+    get:
+      operationId: ListNamespaces
+      summary: List Kubernetes namespaces in the given CCE Instance
+      description: List Kubernetes namespaces in the given CCE Instance
+      parameters:
+        - name: cluster_id
+          in: query
+          description: ID of the CCE Instance
+          required: true
+          schema:
+            type: string
+        - name: project_id
+          in: query
+          description: ID of the Project
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Namespace'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - OTC
+  /sales-history:
+    get:
+      operationId: ListSalesHistory
+      summary: Get sales history
+      description: List sales
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sale'
+        '500':
+          description: Internal Server Error
+      tags:
+        - Sales
+  /categories:
+    get:
+      operationId: ListCategories
+      summary: Get all Categories
+      description: List all Categories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '500':
+          description: Internal Server Error
+      tags:
+        - Categories
+  /categories/{id}:
+    get:
+      operationId: GetCategory
+      summary: Get Category
+      description: Get Category
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Category ID
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal Server Error
+      tags:
+        - Categories
+  /products:
+    get:
+      operationId: ListProducts
+      summary: Get all products for the current seller
+      description: List all Products
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                   $ref: '#/components/schemas/ProductProductEOLSellerObjectProductStateCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Internal Server Error
+      tags:
+        - Products
+    post:
+      operationId: CreateProduct
+      summary: Create a new product offering
+      description: Create a new product offering ready for review
+      requestBody:
+        description: Product to add to the Marketplace
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product Created
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ProductProductEOLSellerObjectProductStateCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Products
+  /products/{id}:
+    get:
+      operationId: GetProduct
+      summary: Get Product
+      description: Get Product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Product ID
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ProductProductEOLSellerObjectProductStateCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal Server Error
+      tags:
+        - Products
+    delete:
+      operationId: DeleteProduct
+      summary: Delete Product
+      description: Delete Product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Product ID
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      responses:
+        '201':
+          description: Product Deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Products
+    patch:
+      operationId: EditProduct
+      summary: Modify Product
+      description: Modify Product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Product ID
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      requestBody:
+        description: Update a product
+        required: true
+        content:
+          application/json:
+            schema:
+               $ref: '#/components/schemas/ProductProductEOLSellerObjectProductStateCombo'
+      responses:
+        '201':
+          description: Product Edited
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ProductProductEOLSellerObjectProductStateCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Products
+  /product-revisions:
+    get:
+      operationId: ListRevisions
+      summary: Get all product revisions
+      description: List all product revisions for the current seller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                   $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Product Revisions
+    post:
+      operationId: CreateRevision
+      summary: Create a new product revision
+      description: Create a new product revision
+      requestBody:
+        description: Product Revision to add and send to review
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+      responses:
+        '201':
+          description: Revision Created
+          content:
+            application/json:
+              schema:
+                 $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Product Revisions
+  /product-revisions/{id}:
+    get:
+      operationId: GetRevision
+      summary: Get a product revision
+      description: Get a product revision by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Revision ID
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal Server Error
+      tags:
+        - Product Revisions
+    patch:
+      operationId: EditRevision
+      summary: Modify a product revision
+      description: Modify a product revision by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Revision ID
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      requestBody:
+        description: Update a product revision
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable entity
+        '500':
+          description: Internal Server Error
+      tags:
+        - Product Revisions
+    delete:
+      operationId: DeleteRevision
+      summary: Delete Revision
+      description: Delete Revision
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Revision ID
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      responses:
+        '200':
+          description: Product revision has been deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      tags:
+        - Product Revisions
+  /applications:
+    get:
+      operationId: ListApplications
+      summary: List Applications
+      description: List Applications
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationSellerApplicationCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Applications
+    post:
+      operationId: CreateApplication
+      summary: Create Application
+      description: Create Application
+      requestBody:
+        description: Create Application
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationApplicationRevisionCombo'
+      responses:
+        '201':
+          description: Application Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationSellerApplicationCombo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      tags:
+        - Applications
+        - Skip Testing
+  /applications/{id}:
+    get:
+      operationId: GetApplication
+      summary: Get Application
+      description: Get Application
+      parameters:
+        - in: path
+          name: id
+          description: Unique ID of the Application
+          required: true
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+                # - $ref: '#/components/schemas/SellerApplication'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          description: Internal Server Error
+      tags:
+        - Applications
+    delete:
+      operationId: DeleteApplication
+      summary: Delete Application
+      description: Delete Application
+      parameters:
+        - in: path
+          name: id
+          description: Unique ID of the Application
+          required: true
+          schema:
+            $ref: '#/components/schemas/NanoID'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '422':
+          description: Unprocessable entity
+        '500':
+          description: Internal Server Error
+      tags:
+        - Applications
+        - Skip Testing
+  /profiles/profile:
+    get:
+      operationId: GetProfile
+      summary: Get Marketplace Profile
+      description: Get Profile. (Unsure) This might be a replacement for the whoami resource.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /logout:
+    get:
+      operationId: Logout
+      summary: Revoke OTC token
+      description: |
+        Revoking OTC token
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      tags:
+        - AuthenticationLogOut
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginPassword:
+      type: object
+      required:
+        - domain_name
+        - username
+        - password
+      properties:
+        domain_name:
+          type: string
+          example: OTC000000000002
+        username:
+          type: string
+          example: john_doe
+        password:
+          type: string
+          example: SecurePassword123
+    Login2FA:
+      type: object
+      required:
+        - domain_name
+        - user_id
+        - password
+        - passcode
+      properties:
+        domain_name:
+          type: string
+        user_id:
+          type: string
+        password:
+          type: string
+        passcode:
+          type: string
+    AuthToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          example: xxxxx.yyyyy.zzzzz
+          readOnly: true
+    WhoAmI:
+      type: object
+      required:
+        - domain_name
+        - username
+        - last_project_id
+        - llm_hub
+      properties:
+        domain_name:
+          type: string
+          description: The OTC domain name as visible in the console
+          example: OTC000000000001
+          readOnly: true
+        username:
+          type: string
+          description: The OTC user name as visible in the console
+          example: john_smith
+          readOnly: true
+        last_project_id:
+          type: string
+          example: a9fd8f4e4cf711eebe560242ac120002
+          description: (Unsure) Last project to have been used with this account
+          readOnly: true
+        llm_hub:
+          description: (Unsure) If access to the LLM Hub has been granted or not
+          type: boolean
+          default: false
+          readOnly: true
+    Project:
+      description: OTC Project in which a Product can be deployed
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: Unique id for this project
+          type: string
+          example: eceab8c3550f43e9eceab8c3c3550f43
+          readOnly: true
+        name:
+          type: string
+          description: Name of the project # TODO - unique?
+          example: example-project
+          readOnly: true
+    Cluster:
+      description: Cluster in which a Product can be deployed
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: Unique id for this cluster
+          type: string
+          example: da5b1415-d80f-11ec-bcaa-0255ac101631
+          readOnly: true
+        name:
+          description: Name of the cluster
+          type: string
+          example: example-cluster
+          readOnly: true
+    Namespace:
+      type: object
+      required:
+        - name
+        - cluster_id
+        - project_id
+      properties:
+        name:
+          description: Name of the namespace (name == namespace.toString())
+          type: string
+          example: example-project
+          readOnly: true
+        cluster_id:
+          description: Id of the cluster to fetch the namespace for
+          type: string
+          example: da5b1415-d80f-11ec-bcaa-0255ac101631
+          readOnly: true
+        project_id:
+          description: Id of the project to fetch the namespace for
+          type: string
+          example: eceab8c3550f43e9eceab8c3c3550f43
+          readOnly: true
+    NanoID:
+      description: Default kind of id for most objects defined in this project
+      type: string
+      readOnly: true
+      pattern: ^[a-zA-Z0-9_-]{21,}$
+      example: NanoID_123456789-UniQ
+    Sale:
+      type: object
+      description: An entry describing the sale of a product on the OTC
+      required:
+        - product_revision_id
+        - product_id
+        - product_name
+        - customer_company_name
+        - customer_company_url
+        - customer_contact_number
+        - customer_contact_email
+        - deployed_at
+      properties:
+        product_revision_id:
+          $ref: '#/components/schemas/NanoID'
+        product_id:
+          $ref: '#/components/schemas/NanoID'
+        product_name:
+          type: string
+          description: Name of the product sold
+          example: Acme Monitor
+        customer_company_name:
+          type: string
+          description: Name of the customer's company that bought the product
+          example: iits-consulting
+        customer_company_url:
+          type: string
+          description: Link to the customer's webpage
+          example: https://iits.de
+          format: uri
+        customer_contact_number:
+          type: string
+          description: Number at which the customer can be reached
+          example: +49 176 XXXXXXXX
+          pattern: ^\+?[0-9\s\-()]{6,}$
+        customer_contact_email:
+          type: string
+          description: Email at which the customer can be contacted
+          example: projekte@iits-consulting.de
+          format: email
+        deployed_at:
+          type: string
+          description: Time at which the sold product has been deployed by the customer
+          example: '2096-07-08T15:04:05Z'
+          format: date-time
+    Category:
+      type: object
+      description: The category of product to be sold
+      required:
+        - id
+        - name
+        - position
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        name:
+          type: string
+          description: Name of the category
+          example: CMS
+        description:
+          type: string
+          description: The long description of this category
+          example: Content Management Systems (CMS)
+        position:
+          type: integer
+          description: (Unsure) The weighting used to order categories when listed on the frontend. This isn't used for ordering by the provider
+          example: 1
+        state:
+          type: string
+          description: Enum determining if the category can be used (`active`) or not (`suspended`)
+          enum:
+            - active
+            - suspended
+          example: active
+    LlmHub:
+      # description: # TODO
+      type: object
+      required:
+        - external_api
+      properties:
+        external_api:
+          type: string
+          description: Link to external API for the LLM
+          example: https://llm-server.llmhub.t-systems.net/v2
+          format: uri
+    ProductProductEOLSellerObjectProductStateCombo:
+      description: Combo object of the different Product kinds (Product, ProductEOL, SellerObject, ProductState)
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - license_type
+        - seller
+      properties:
+        active_revision_id:
+          $ref: '#/components/schemas/NanoID'
+        eol:
+          type: boolean
+          description: Set product to EOL. The data will be calculated on backend
+          example: true
+        state:
+          type: string
+          description: State of the Product's publishing status. Either `published` or `de-published`
+          enum:
+            - published
+            - de-published
+        eol_date:
+          type: string
+          format: date-time
+          description: End-of-life of the product
+          example: '2096-07-08T15:04:05Z'
+        seller:
+          $ref: '#/components/schemas/Seller'
+        id:
+          $ref: '#/components/schemas/NanoID'
+        name:
+          type: string
+          description: The product name which is shown in the teaser and used as a title on the product offering page
+          example: Wordpress
+        type:
+          type: string
+          description: The service deployment type in MVP this is container (CCE), post MVP this will expand to other types
+          enum:
+            - container
+          example: container
+        license_type:
+          type: string
+          description: The type of license, MVP is only unpaid licenses
+          enum:
+            - opensource
+            - free
+            - trial
+            - byol
+          example: trial
+        weight:
+          type: integer
+          description: The weight of the product, the higher the number the better the recommendation
+          example: 275
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time when the product was created
+          example: '2023-09-06T22:58:24Z'
+          readOnly: true
+    Product:
+      type: object
+      description: The Product (offering) to be sold on the marketplace
+      required:
+        - name
+        - type
+        - license_type
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        eol:
+          type: boolean
+          description: Set product to EOL. The data will be calculated on backend
+          example: true
+        eol_date:
+          type: string
+          format: date-time
+          description: End-of-life of the product
+          example: '2096-07-08T15:04:05Z'
+        seller:
+          $ref: '#/components/schemas/Seller'
+        llm_hub:
+          $ref: '#/components/schemas/LlmHub'
+        name:
+          type: string
+          description: The product name which is shown in the teaser and used as a title on the product offering page
+          example: Wordpress
+        type:
+          type: string
+          description: The service deployment type in MVP this is container (CCE), post MVP this will expand to other types
+          enum:
+            - container
+          example: container
+        license_type:
+          type: string
+          description: The type of license, MVP is only unpaid licenses
+          enum:
+            - opensource
+            - free
+            - trial
+            - byol
+          example: trial
+        weight:
+          type: integer
+          description: The weight of the product, the higher the number the better the recommendation
+          example: 275
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          description: The date and time when the product was created
+          example: '2023-09-06T22:58:24Z'
+          readOnly: true
+    ProductEOL:
+      type: object
+      description: Concise response of when the product reaches end-of-life
+      properties:
+        eol_date:
+          type: string
+          format: date-time
+          description: End-of-life of the product
+          example: '2096-07-08T15:04:05Z'
+    Seller:
+      type: object
+      description: The entity responsible for selling the product on the Marketplace
+      required:
+        - id
+        - name
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        name:
+          type: string
+          description: The seller name
+          example: Deutsche Telekom AG
+        description:
+          type: string
+          description: An optional seller description
+          example: Die Deutsche Telekom AG ist eines der führenden integrierten Telekommunikations-Unternehmen weltweit
+        state:
+          type: string
+          description: State of the Seller. Can be either `active` or `suspended`
+          enum:
+            - active
+            - suspended
+        support_email:
+          type: string
+          description: The seller's email address
+          format: email
+          example: projekte@iits-consulting.de
+        support_url:
+          type: string
+          format: uri
+          example: https://iits.de
+          description: The seller's website
+    SellerObject:
+      type: object
+      description: Wrapper around the Seller schema
+      required:
+        - seller
+      properties:
+        seller:
+          $ref: '#/components/schemas/Seller'
+    ProductState:
+      type: object
+      description: Concise response of the product's publishing status
+      properties:
+        state:
+          type: string
+          description: State of the product's publishing status (`published` or `de-published`)
+          enum:
+            - published
+            - de-published
+    ApplicationConfigurationTemplate:
+      description: Configuration object describing the interface the client or customer uses to configure the application they're buying
+      type: object
+      required:
+        - key
+        - label
+      properties:
+        confidential:
+          type: boolean
+          description: If this config entry should be confidential
+          default: false
+        input_type:
+          type: string
+          enum:
+            - text
+            - switch
+            - selection
+          description: The type of input which is used for this element, text, switch or selection (selection may be eiter radio, select or checkbox)
+        key:
+          type: string
+          example: admin_username
+          description: Name of the attribute the customer will need to set
+        default_value:
+          type: string
+          example: admin
+          description: Default value of the attribute the customer will need to set
+        label:
+          type: string
+          example: Default Administration Username
+          description: Description of the key/value the customer will need to set
+        hint:
+          type: string
+          example: What would you like to be your login?
+          description: Extra info describing what the configuration will be used for
+        tooltip:
+          type: string
+          example: At least 8 characters with upper and lowercase letters and numbers and at least one special character (.-_)
+          description: Extra info to be shown in a tooltip while the customer enters the configuration
+        validation:
+          type: array
+          default: []
+          description: Describes rules to be used to check the configurations and ensure accuracy (or conformity at the very least)
+          items:
+            type: object
+            properties:
+              pattern:
+                type: string
+                format: regex
+                example: /[a-zA-Z0-9_\-\.]+/gm
+              message:
+                type: string
+                example: A username must be at least 8 characters long and may only contain alphanumeric characters, underscores, hyphens, and periods.
+        hidden:
+          type: boolean
+          example: false
+          default: false
+          description: Toggles if the configuration should be hidden or not
+        required:
+          type: boolean
+          example: true
+          default: false
+          description: Toggles if the configuration needs to be set or not
+        multiple:
+          type: boolean
+          example: false
+          default: false
+          description: When the configuration is a selection type this property defines if multiple options can be selected or if the user can only choose one.
+        values:
+          type: array
+          description: An array of value objects
+          example:
+            - label: Large
+              value: 1GiB
+            - label: Medium
+              value: 1MiB
+            - label: Small
+              value: 1KiB
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+                description: The label of the value being selected
+              value:
+                type: string
+                description: The value of the selected option which will be used during creation of the application if selected
+    ProductRevisionProductRevisionSellerInternalsCombo:
+      description: Combo object made of ProductRevision and the Seller in the ProductRevision
+      type: object
+      required:
+        - pricing_info
+        - description
+        - description_short
+        - categories
+        - used_software
+        - post_deployment_info
+        - helm_external
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        contractual_documents:
+          type: array
+          description: Legal documents to be agreed to when using this product. This field is only used during Create (POST)
+          items:
+            type: object
+            properties:
+              content:
+                type: string
+                description: base64 encoded file with mimetype
+                example: data:application/pdf;base64,
+              file_name:
+                type: string
+                description: Name of the file
+                example: legal-doc.pdf
+              is_deleted:
+                type: boolean
+                description: Should the file be marked as deleted
+                example: false
+        contractual_documents_info:
+          type: array
+          description: Legal documents governing the use of this product
+          items:
+            type: object
+            properties:
+              file_name:
+                type: string
+                description: Name of the file
+                example: legal-doc.pdf
+              url:
+                type: string
+                description: Url to the file
+                example: https://obs.t-systems.com/my-project/ofojxi
+                format: uri
+        product_revision_application_configuration:
+          description: Application configuration records
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationConfigurationTemplate'
+        number:
+          type: integer
+          description: The incremental number of the revision
+          example: 6
+          readOnly: true
+        product_id:
+          $ref: '#/components/schemas/NanoID'
+        proposed_release_date:
+          description: When the Seller would like to release this Revision of the Product. Once agreed to, a `scheduled_release_date` and/or `scheduled_release_until_date` will be set
+          type: string
+          format: date-time
+          example: '2023-09-06T22:58:24Z'
+        helm_external:
+          type: string
+          description: The Helm chart URL for the product provided by the seller
+          example: oci://registry-1.docker.io/bitnamicharts/wordpress
+          format: uri
+        state:
+          type: string
+          enum:
+            - draft
+            - ready_for_review
+            - rejected
+            - approved
+          example: draft
+          description: Enum showing the state this revision is in. Revisions, when persisted, start as `draft`, but can be sent for review by setting this to `ready_for_review` after which this will be set to either `approved` or `rejected`
+        license_fee:
+          type: string
+          description: The license fee including any details, this may be a either a simple one off license fee in Euro, or a complex annual license fee in Euro and a variable additional cost
+          example: 0.00 €
+        license_info:
+          type: string
+          example: You can start with an auto-generated free 30 day trial (full access).
+          description: Extra info about the license the Customer needs to agree to when buying this Product
+        pricing_info:
+          type: string
+          description: The pricing information as a guideline for how much the application will cost the user in the OTC
+          example: |-
+            Open Telekom Cloud pricing is usage based.
+            3 Cents per 1,000 requests (CPU-RAM outbound, traffic) plus 0,0506 €/GB per month.
+        description:
+          type: string
+          description: The Markdown description of the product functionality
+          example: Create a place for your business, your interests, or anything else—with the open source platform that powers the web.
+        description_short:
+          type: string
+          description: The short description of the product which appears in the teasers
+          example: This is a two line short description for the given offering
+        icon:
+          type: string
+          description: Base64 encoded image in 16:9 format
+          example: data:image/png;base64,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
+        eula:
+          type: string
+          description: (Deprecated) The Markdown description of the product EULA
+          example: |-
+            # Terms of Service
+
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+            dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+            clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+            consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+            diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+            takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+            diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+            accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
+            dolor sit amet.
+
+            ## Service Availability
+            Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu
+            feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril
+            delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+            sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+
+            ## Liability
+            Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+            commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel
+            illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent
+            luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
+
+            * Lorem ipsum dolor sit amet,
+            * Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+            * Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            * Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+
+            Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer
+            possim assum. Lorem ipsum dolor sit amet, [consectetuer adipiscing elit](https://example.com/your-link-here), sed
+            diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam,
+            quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+
+            1. Lorem ipsum dolor sit amet
+            1. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+            1. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            1. Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+            1. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat
+        categories:
+          description: Ids correlating to the Categories this Product should be in
+          type: array
+          items:
+            type: string
+          example:
+            - 8ikqwxnE3eBKFarxStzh4
+            - F_YUgWRwgfPpuHZ7YX7hk
+        used_software:
+          description: Entries describing the software used in this Product and the licenses that govern their use
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: nginx
+                description: The name of the software used
+              license_name:
+                example: BSD 3 Clause
+                description: The name of the license used to govern the use of the software
+                type: string
+              license_url:
+                example: https://opensource.org/license/bsd-3-clause
+                description: Link to the license text
+                type: string
+                format: uri
+          example:
+            - name: php 8
+              license_name: The PHP License, version 3.01
+              license_url: https://www.php.net/license/3_01.txt
+            - name: MySQL5.6
+              license_name: GPLv2
+              license_url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+        pre_deployment_info:
+          type: string
+          description: The Markdown text for the pre deployment screen explaining what to expect during deployment
+          example: |-
+            # This will take long
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+
+            # Have this information ready
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+        version:
+          type: string
+          description: The version of the release
+          example: 0.0.1
+        scheduled_release_date:
+          type: string
+          description: When the product is scheduled to be released (usually set after being proposed with the proposed release date)
+          format: date-time
+          example: '2023-09-06T22:58:24Z'
+        scheduled_release_until_date:
+          type: string
+          description: Time before the product is scheduled to be released (not after this date, but after scheduled_release_date)
+          format: date-time
+          example: '2023-09-06T22:58:24Z'
+        guidance:
+          type: string
+          description: A description of the install process
+          example: |-
+            # Step 1 - Preparation:
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+
+            # Step 2 - Setup:
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+        post_deployment_info:
+          type: string
+          description: The Markdown text for the post deployment screen explaining how to access the product or the next steps
+          example: |-
+            # Why does it take so long?
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+
+            # Where can I find it when it's ready?
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+        admin_suggestion:
+          type: string
+          description: Admin suggestion is for product revision which got rejected
+          example: Please work on pricing_info. This parameter has invalid data.
+        byol:
+          type: object
+          properties:
+            secret_name:
+              type: string
+              description: Name of the secret where byol license will be stored.
+            file_name_in_secret:
+              type: string
+              description: filename in secret in which the license data will be stored.
+            activation_url:
+              type: string
+              description: (Unsure) Link that, when visited, registers that the customer has accepted the license
+            webshop_url:
+              type: string
+              description: (Unsure) Link to the webshop where the Product is available
+    ProductRevision:
+      description: Describes a Revision or iteration of a Product
+      type: object
+      required:
+        - pricing_info
+        - description
+        - description_short
+        - icon
+        - eula
+        - categories
+        - used_software
+        - post_deployment_info
+      properties:
+        license_fee:
+          type: string
+          description: The license fee including any details, this may be a either a simple one off license fee in Euro, or a complex annual license fee in Euro and a variable additional cost
+          example: 0.00 €
+        license_info:
+          type: string
+          description: You can start with an auto-generated free 30 day trial (full access).
+        pricing_info:
+          type: string
+          description: The pricing information as a guideline for how much the application will cost the user in the OTC
+          example: |-
+            Open Telekom Cloud pricing is usage based.
+            3 Cents per 1,000 requests (CPU-RAM outbound, traffic) plus 0,0506 €/GB per month.
+        description:
+          type: string
+          description: The Markdown description of the product functionality
+          example: Create a place for your business, your interests, or anything else—with the open source platform that powers the web.
+        description_short:
+          type: string
+          description: The short description of the product which appears in the teasers
+          example: This is a two line short description for the given offering
+        icon:
+          type: string
+          description: Base64 encoded image in 16:9 format
+          example: data:image/png;base64,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
+        eula:
+          type: string
+          description: (Deprecated) The Markdown description of the product EULA
+          example: |-
+            # Terms of Service
+
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+            dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+            clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+            consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+            diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+            takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
+            diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et
+            accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
+            dolor sit amet.
+
+            ## Service Availability
+            Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu
+            feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril
+            delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+            sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+
+            ## Liability
+            Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
+            commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel
+            illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent
+            luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
+
+            * Lorem ipsum dolor sit amet,
+            * Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+            * Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            * Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+
+            Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer
+            possim assum. Lorem ipsum dolor sit amet, [consectetuer adipiscing elit](https://example.com/your-link-here), sed
+            diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam,
+            quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+
+            1. Lorem ipsum dolor sit amet
+            1. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+            1. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            1. Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+            1. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat
+        categories:
+          description: List of ids corresponding to Categories that this Product is in
+          type: array
+          items:
+            type: string
+          example:
+            - 8ikqwxnE3eBKFarxStzh4
+            - F_YUgWRwgfPpuHZ7YX7hk
+        used_software:
+          description: Entries describing the software used in this Product and the licenses that govern their use
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: nginx
+                description: Name of the software used
+              license_name:
+                example: BSD 3 Clause
+                type: string
+                description: Name of the license governing the use of the software
+              license_url:
+                example: https://opensource.org/license/bsd-3-clause
+                description: Link pointing to the text of the license
+                type: string
+                format: uri
+          example:
+            - name: php 8
+              license_name: The PHP License, version 3.01
+              license_url: https://www.php.net/license/3_01.txt
+            - name: MySQL5.6
+              license_name: GPLv2
+              license_url: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+        post_deployment_info:
+          type: string
+          description: The Markdown text for the post deployment screen explaining how to access the product or the next steps
+          example: |-
+            # Why does it take so long?
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+
+            # Where can I find it when it's ready?
+            Lorem ipsum dolor sit amet, consetetur sadipscing elitr, diam nonumy eirmod tempor invidunt ut labore et dolore
+            magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
+            gubergren, no sea takimata sanctus est Lorem ipsum amet.
+        configuration:
+          description: List of configurations used to configure the application when deployed
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationConfigurationTemplate'
+        admin_suggestion:
+          type: string
+          description: Admin suggestion is for product revision which got rejected
+          example: Please work on pricing_info. This parameter has invalid data.
+        byol:
+          type: object
+          properties:
+            secret_name:
+              type: string
+              description: Name of the secret where byol license will be stored.
+            file_name_in_secret:
+              type: string
+              description: filename in secret in which the license data will be stored.
+            activation_url:
+              type: string
+            webshop_url:
+              type: string
+    ProductRevisionSellerInternals:
+      description: Concise description of a Product's Revision
+      type: object
+      required:
+        - proposed_release_date
+        - helm_external
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        number:
+          type: integer
+          description: The incremental number of the revision
+          example: 6
+          readOnly: true
+        product_id:
+          $ref: '#/components/schemas/NanoID'
+        proposed_release_date:
+          type: string
+          format: date-time
+          example: '2023-09-06T22:58:24Z'
+        helm_external:
+          type: string
+          description: The Helm chart URL for the product provided by the seller
+          example: oci://registry-1.docker.io/bitnamicharts/wordpress
+        state:
+          type: string
+          enum:
+            - draft
+            - ready_for_review
+            - rejected
+            - approved
+          example: draft
+    ApplicationConfiguration:
+      description: Key/Value pair set by the Customer as a result of the Configuration process. See the ApplicationConfigurationTemplate attribute for the Seller's perspective
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+          description: The key or name of the property to be set
+          example: admin_username
+        value:
+          type: string
+          description: The value of the property to be set
+          example: john.doe
+    ApplicationSellerApplicationCombo:
+      description: Combo object of Application and Seller
+      type: object
+      required:
+        - project_id
+        - cluster_id
+        - namespace
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        project_id:
+          type: string
+          description: The project ID within which the CCE cluster for deployment can be found
+          example: 1a2b3c4d5e6fg7h8i9j0k1a2b3c4d5e6
+        cluster_id:
+          type: string
+          description: The cluster ID within which the namespace for deployment can be found
+          example: a1b2c3d4-e5f6-a7b8-c9d0-a1b2c3d4e5f6
+        namespace:
+          type: string
+          description: The CCE cluster namespace within which the application should be deployed
+          example: default
+        release_name:
+          type: string
+          description: The name of the Helm release
+          pattern: ^[a-zA-Z0-9](?:[a-zA-Z0-9-.]{0,53}[a-zA-Z0-9])?$
+          example: awesome-app
+        description:
+          type: string
+          description: user defined application description
+          example: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+        configuration:
+          description: List of Configuration for the application
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationConfiguration'
+        state:
+          type: string
+          enum:
+            - error
+            - pending
+            - ready
+          description: Status of the application's deployment process. Starts `pending` on resource creation before being set to either `error` or `ready`
+          readOnly: true
+        username:
+          type: string
+          example: john_doe
+          readOnly: true
+          description: (Unsure) Username of the user deploying the application
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-09-06T22:58:24Z'
+          description: Time and date of deployment
+          readOnly: true
+        byol_license:
+          type: string
+          description: Base64 encoded string of license (might have replaced the Eula attribute)
+          example: MS4gTElDRU5TRSBHUkFOVEVECgogCgpTdWJqZWN0IHRvIHRoZSB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB0aGlzIEFncmVlbWVudCBhbmQgaW4gY29uc2lkZXJhdGlvbiBvZiBMaWNlbnNlZeKAmXMgb2JsaWdhdGlvbiB0byBwYXkgbW9uZXRhcnkgZmVlcyBhcyBvdXRsaW5lZCBpbiBTY2hlZHVsZSBBLCBzdWNoIGZlZXMgd2hpY2ggbWF5IGJlIGFkanVzdGVkIGZyb20gdGltZSB0byB0aW1lIGJ5IG11dHVhbCB3cml0dGVuIGNvbnNlbnQgb2YgdGhlIHBhcnRpZXMsIExpY2Vuc29yIGhlcmVieSBncmFudHMsIGFuZCBMaWNlbnNlZSBoZXJlYnkgYWNjZXB0cywgYSBwZXJwZXR1YWwsIG5vbnRyYW5zZmVyYWJsZSBsaWNlbnNlIHRvIHVzZSB0aGUgU29mdHdhcmUgaW4gb2JqZWN0IGNvZGUgZm9ybSB3aXRoaW4gdGhlIFVuaXRlZCBTdGF0ZXMuIEV4Y2VwdCBmb3IgYSBjdXJyZW50IGxpY2Vuc2Ugd2l0aCBOYXRpb253aWRlIEdsb2JhbCBIb2xkaW5ncywgSW5jLiwgTGljZW5zb3IgYWdyZWVzIHRoaXMgYWdyZWVtZW50IHdvdWxkIGJlIGV4Y2x1c2l2ZSB0byBMaWNlbnNlZSBhbmQgYWdyZWVzIG5vdCB0byBlbnRlciBpbnRvIGFueSBmdXR1cmUgU29mdHdhcmUgbGljZW5zZSBvYmxpZ2F0aW9ucyBvciBsaWNlbnNlcyB3aXRoIGFueSB0aGlyZC1wYXJ0aWVzIHdpdGhvdXQgdGhlIHByaW9yIHdyaXR0ZW4gY29uc2VudCBvZiBMaWNlbnNlZS4KTGljZW5zb3IgYWxzbyBncmFudHMgcGVybWlzc2lvbiB0byBMaWNlbnNlZSB0byBtYWtlIGFuZCBjcmVhdGUgY3VzdG9taXphdGlvbnMsIHVwZGF0ZXMgb3IgY29ycmVjdGlvbnMgdG8gdGhlIFNvZnR3YXJlLiBUaGUgcGFydGllcyBhZ3JlZSB0aGF0IExpY2Vuc29yIHNoYWxsIGNvbnRpbnVlIHRvIG93biBhbGwgcmlnaHQsIHRpdGxlIGFuZCBpbnRlcmVzdCBpbiBhbmQgdG8gdGhlIFNvZnR3YXJlIGFuZCBhbGwgaW50ZWxsZWN0dWFsIHByb3BlcnR5IHJpZ2h0cyBlbWJvZGllZCB0aGVyZWluIG9yIHJlbGF0ZWQgdGhlcmV0byBpbmNsdWRpbmcsIGJ1dCBub3QgbGltaXRlZCB0bywgdGhlIHNvdXJjZSBhbmQgb2JqZWN0IGNvZGVzIGFuZCBhbnkgY3VzdG9taXphdGlvbnMsIHVwZGF0ZXMgYW5kIGNvcnJlY3Rpb25zIHRvIHRoZSBTb2Z0d2FyZS4gRXhjZXB0IGFzIGV4cHJlc3NseSBwcm92aWRlZCBoZXJlaW4sIG5vIGludGVsbGVjdHVhbCBwcm9wZXJ0eSByaWdodHMgYXJlIGdyYW50ZWQgdG8gTGljZW5zZWUgYnkgaW1wbGljYXRpb24sIGVzdG9wcGVsLCBvciBvdGhlcndpc2Uu
+        product:
+          $ref: '#/components/schemas/Product'
+        product_revision:
+          $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+        application_seller:
+          $ref: '#/components/schemas/Seller'
+    ApplicationApplicationRevisionCombo:
+      description: Combo object of Application and ProductRevision
+      type: object
+      required:
+        - product_revision_id
+        - project_id
+        - cluster_id
+        - namespace
+      properties:
+        product_revision_id:
+          type: string
+          description: The revision id of the product to enable deployment for review and draft testing
+          example: dC4O49b1oCPydA0xINH9u
+        id:
+          $ref: '#/components/schemas/NanoID'
+        project_id:
+          type: string
+          description: The project ID within which the CCE cluster for deployment can be found
+          example: 1a2b3c4d5e6fg7h8i9j0k1a2b3c4d5e6
+        cluster_id:
+          type: string
+          description: The cluster ID within which the namespace for deployment can be found
+          example: a1b2c3d4-e5f6-a7b8-c9d0-a1b2c3d4e5f6
+        namespace:
+          type: string
+          description: The CCE cluster namespace within which the application should be deployed
+          example: default
+        release_name:
+          type: string
+          description: The name of the Helm release
+          pattern: ^[a-zA-Z0-9](?:[a-zA-Z0-9-.]{0,53}[a-zA-Z0-9])?$
+          example: awesome-app
+        description:
+          type: string
+          description: user defined application description
+          example: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+        configuration:
+          description: List of Configuration for the deployed application
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationConfiguration'
+        state:
+          type: string
+          enum:
+            - error
+            - pending
+            - ready
+          description: Enum showing the Application's deployment state. Starts `pending` on resource creation and is eventually set to `ready` or `error`
+          readOnly: true
+        username:
+          type: string
+          example: john_doe
+          readOnly: true
+          description: (Unsure) Username of the Customer deploying the Application
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-09-06T22:58:24Z'
+          readOnly: true
+          description: Time and date of application deployment
+        byol_license:
+          type: string
+          example: MS4gTElDRU5TRSBHUkFOVEVECgogCgpTdWJqZWN0IHRvIHRoZSB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB0aGlzIEFncmVlbWVudCBhbmQgaW4gY29uc2lkZXJhdGlvbiBvZiBMaWNlbnNlZeKAmXMgb2JsaWdhdGlvbiB0byBwYXkgbW9uZXRhcnkgZmVlcyBhcyBvdXRsaW5lZCBpbiBTY2hlZHVsZSBBLCBzdWNoIGZlZXMgd2hpY2ggbWF5IGJlIGFkanVzdGVkIGZyb20gdGltZSB0byB0aW1lIGJ5IG11dHVhbCB3cml0dGVuIGNvbnNlbnQgb2YgdGhlIHBhcnRpZXMsIExpY2Vuc29yIGhlcmVieSBncmFudHMsIGFuZCBMaWNlbnNlZSBoZXJlYnkgYWNjZXB0cywgYSBwZXJwZXR1YWwsIG5vbnRyYW5zZmVyYWJsZSBsaWNlbnNlIHRvIHVzZSB0aGUgU29mdHdhcmUgaW4gb2JqZWN0IGNvZGUgZm9ybSB3aXRoaW4gdGhlIFVuaXRlZCBTdGF0ZXMuIEV4Y2VwdCBmb3IgYSBjdXJyZW50IGxpY2Vuc2Ugd2l0aCBOYXRpb253aWRlIEdsb2JhbCBIb2xkaW5ncywgSW5jLiwgTGljZW5zb3IgYWdyZWVzIHRoaXMgYWdyZWVtZW50IHdvdWxkIGJlIGV4Y2x1c2l2ZSB0byBMaWNlbnNlZSBhbmQgYWdyZWVzIG5vdCB0byBlbnRlciBpbnRvIGFueSBmdXR1cmUgU29mdHdhcmUgbGljZW5zZSBvYmxpZ2F0aW9ucyBvciBsaWNlbnNlcyB3aXRoIGFueSB0aGlyZC1wYXJ0aWVzIHdpdGhvdXQgdGhlIHByaW9yIHdyaXR0ZW4gY29uc2VudCBvZiBMaWNlbnNlZS4KTGljZW5zb3IgYWxzbyBncmFudHMgcGVybWlzc2lvbiB0byBMaWNlbnNlZSB0byBtYWtlIGFuZCBjcmVhdGUgY3VzdG9taXphdGlvbnMsIHVwZGF0ZXMgb3IgY29ycmVjdGlvbnMgdG8gdGhlIFNvZnR3YXJlLiBUaGUgcGFydGllcyBhZ3JlZSB0aGF0IExpY2Vuc29yIHNoYWxsIGNvbnRpbnVlIHRvIG93biBhbGwgcmlnaHQsIHRpdGxlIGFuZCBpbnRlcmVzdCBpbiBhbmQgdG8gdGhlIFNvZnR3YXJlIGFuZCBhbGwgaW50ZWxsZWN0dWFsIHByb3BlcnR5IHJpZ2h0cyBlbWJvZGllZCB0aGVyZWluIG9yIHJlbGF0ZWQgdGhlcmV0byBpbmNsdWRpbmcsIGJ1dCBub3QgbGltaXRlZCB0bywgdGhlIHNvdXJjZSBhbmQgb2JqZWN0IGNvZGVzIGFuZCBhbnkgY3VzdG9taXphdGlvbnMsIHVwZGF0ZXMgYW5kIGNvcnJlY3Rpb25zIHRvIHRoZSBTb2Z0d2FyZS4gRXhjZXB0IGFzIGV4cHJlc3NseSBwcm92aWRlZCBoZXJlaW4sIG5vIGludGVsbGVjdHVhbCBwcm9wZXJ0eSByaWdodHMgYXJlIGdyYW50ZWQgdG8gTGljZW5zZWUgYnkgaW1wbGljYXRpb24sIGVzdG9wcGVsLCBvciBvdGhlcndpc2Uu
+          description: Base64 encoded string containing the license text of the byol license
+
+    Application:
+      description: Describes a deployed instance of a ProductRevision. Creating an instance of this is like deploying a specific version of a Product on the Project & Namespace & Cluster of your choosing
+      type: object
+      required:
+        - project_id
+        - cluster_id
+        - namespace
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        project_id:
+          type: string
+          description: The project ID within which the CCE cluster for deployment can be found
+          example: 1a2b3c4d5e6fg7h8i9j0k1a2b3c4d5e6
+        cluster_id:
+          type: string
+          description: The cluster ID within which the namespace for deployment can be found
+          example: a1b2c3d4-e5f6-a7b8-c9d0-a1b2c3d4e5f6
+        namespace:
+          type: string
+          description: The CCE cluster namespace within which the application should be deployed
+          example: default
+        release_name:
+          type: string
+          description: The name of the Helm release
+          pattern: ^[a-zA-Z0-9](?:[a-zA-Z0-9-.]{0,53}[a-zA-Z0-9])?$
+          example: awesome-app
+        description:
+          type: string
+          description: user defined application description
+          example: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+        configuration:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationConfiguration'
+        state:
+          type: string
+          enum:
+            - error
+            - pending
+            - ready
+          description: Enum showing the Application's deployment state. Starts `pending` on resource creation and is eventually set to `ready` or `error`
+          readOnly: true
+        username:
+          type: string
+          example: john_doe
+          readOnly: true
+          description: (Unsure) Username of the Customer deploying the Application
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-09-06T22:58:24Z'
+          readOnly: true
+          description: Time and date of application deployment
+        byol_license:
+          type: string
+          description: Base64 encoded string containing the license text of the byol license
+          example: MS4gTElDRU5TRSBHUkFOVEVECgogCgpTdWJqZWN0IHRvIHRoZSB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB0aGlzIEFncmVlbWVudCBhbmQgaW4gY29uc2lkZXJhdGlvbiBvZiBMaWNlbnNlZeKAmXMgb2JsaWdhdGlvbiB0byBwYXkgbW9uZXRhcnkgZmVlcyBhcyBvdXRsaW5lZCBpbiBTY2hlZHVsZSBBLCBzdWNoIGZlZXMgd2hpY2ggbWF5IGJlIGFkanVzdGVkIGZyb20gdGltZSB0byB0aW1lIGJ5IG11dHVhbCB3cml0dGVuIGNvbnNlbnQgb2YgdGhlIHBhcnRpZXMsIExpY2Vuc29yIGhlcmVieSBncmFudHMsIGFuZCBMaWNlbnNlZSBoZXJlYnkgYWNjZXB0cywgYSBwZXJwZXR1YWwsIG5vbnRyYW5zZmVyYWJsZSBsaWNlbnNlIHRvIHVzZSB0aGUgU29mdHdhcmUgaW4gb2JqZWN0IGNvZGUgZm9ybSB3aXRoaW4gdGhlIFVuaXRlZCBTdGF0ZXMuIEV4Y2VwdCBmb3IgYSBjdXJyZW50IGxpY2Vuc2Ugd2l0aCBOYXRpb253aWRlIEdsb2JhbCBIb2xkaW5ncywgSW5jLiwgTGljZW5zb3IgYWdyZWVzIHRoaXMgYWdyZWVtZW50IHdvdWxkIGJlIGV4Y2x1c2l2ZSB0byBMaWNlbnNlZSBhbmQgYWdyZWVzIG5vdCB0byBlbnRlciBpbnRvIGFueSBmdXR1cmUgU29mdHdhcmUgbGljZW5zZSBvYmxpZ2F0aW9ucyBvciBsaWNlbnNlcyB3aXRoIGFueSB0aGlyZC1wYXJ0aWVzIHdpdGhvdXQgdGhlIHByaW9yIHdyaXR0ZW4gY29uc2VudCBvZiBMaWNlbnNlZS4KTGljZW5zb3IgYWxzbyBncmFudHMgcGVybWlzc2lvbiB0byBMaWNlbnNlZSB0byBtYWtlIGFuZCBjcmVhdGUgY3VzdG9taXphdGlvbnMsIHVwZGF0ZXMgb3IgY29ycmVjdGlvbnMgdG8gdGhlIFNvZnR3YXJlLiBUaGUgcGFydGllcyBhZ3JlZSB0aGF0IExpY2Vuc29yIHNoYWxsIGNvbnRpbnVlIHRvIG93biBhbGwgcmlnaHQsIHRpdGxlIGFuZCBpbnRlcmVzdCBpbiBhbmQgdG8gdGhlIFNvZnR3YXJlIGFuZCBhbGwgaW50ZWxsZWN0dWFsIHByb3BlcnR5IHJpZ2h0cyBlbWJvZGllZCB0aGVyZWluIG9yIHJlbGF0ZWQgdGhlcmV0byBpbmNsdWRpbmcsIGJ1dCBub3QgbGltaXRlZCB0bywgdGhlIHNvdXJjZSBhbmQgb2JqZWN0IGNvZGVzIGFuZCBhbnkgY3VzdG9taXphdGlvbnMsIHVwZGF0ZXMgYW5kIGNvcnJlY3Rpb25zIHRvIHRoZSBTb2Z0d2FyZS4gRXhjZXB0IGFzIGV4cHJlc3NseSBwcm92aWRlZCBoZXJlaW4sIG5vIGludGVsbGVjdHVhbCBwcm9wZXJ0eSByaWdodHMgYXJlIGdyYW50ZWQgdG8gTGljZW5zZWUgYnkgaW1wbGljYXRpb24sIGVzdG9wcGVsLCBvciBvdGhlcndpc2Uu
+    SellerApplication:
+      description: Concise wrapper around a Product, a specific ProductRevision and a Seller
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        product_revision:
+           $ref: '#/components/schemas/ProductRevisionProductRevisionSellerInternalsCombo'
+        seller:
+          $ref: '#/components/schemas/Seller'
+    ApplicationRevision:
+      description: Concise wrapper around a ProductRevsion
+      type: object
+      required:
+        - product_revision_id
+      properties:
+        product_revision_id:
+          type: string
+          description: The revision id of the product to enable deployment for review and draft testing
+          example: dC4O49b1oCPydA0xINH9u
+    Profile:
+      description: Describes the currently logged in Seller
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          $ref: '#/components/schemas/NanoID'
+        name:
+          type: string
+          example: "ImpressSol GmbH"
+          description: The name of the Seller
+          readOnly: true
+        temp_name:
+          type: string
+          example: "iits_2"
+          description: Temporary name (Unsure) Might be set when the Seller is being verified?
+          readOnly: true
+        email:
+          type: string
+          example: "otc-marketplace@iits-consulting.de"
+          description: Email where the Seller can be reached
+          format: email
+          readOnly: true
+        temp_email:
+          type: string
+          example: "john.doe@iits-consulting.de"
+          description: Temporary email where the Seller can be reached
+          format: email
+          readOnly: true
+        support_email:
+          type: string
+          example: "otc-marketplace-support@iits-consulting.de"
+          description: Email where the Customer can reach the Seller for support with the Product
+          format: email
+          readOnly: true
+        temp_support_email:
+          type: string
+          example: "generic_support@iits-consulting.de"
+          description: Temporary email where the Customer can reach the Seller for support with the Product
+          format: email
+          readOnly: true
+        description:
+          type: string
+          example: "iits-consulting"
+          description: Description of the Seller
+          readOnly: true
+        temp_description:
+          type: string
+          example: "iits-consulting"
+          description: Temporary description of the Seller
+          readOnly: true
+        customer_support_number:
+          type: string
+          example: +49176XXXXXXXX
+          pattern: '^\+?[0-9\s\-()]{6,}$'
+          description: Number at which the Seller can be reached for customer support
+          readOnly: true
+        temp_customer_support_number:
+          type: string
+          example: +49176XXXXXXXY
+          pattern: '^\+?[0-9\s\-()]{6,}$'
+          description: Temporary number at which the Seller can be reached for customer support
+          readOnly: true
+        support_url:
+          type: string
+          example: https://iits-consulting.de/otc-marketplace/support
+          format: uri
+          description: Link to webpage where Seller can give customer support
+          readOnly: true
+        temp_support_url:
+          type: string
+          example: https://iits-consulting.de/otc-marketplace/support
+          format: uri
+          description: Temporary link to webpage where Seller can give customer support
+          readOnly: true
+        status:
+          type: string
+          enum: # TODO - incomplete
+            - approved
+          description: Enum showing the Seller's status for selling products on the Marketplace
+          readOnly: true
+  examples:
+    LoginPassword:
+      summary: Login using Username and Password
+      value:
+        domain_name: OTC000000000001
+        username: john_doe
+        password: SecurePassword123
+    Login2FA:
+      summary: Login using MFA
+      value:
+        domain_name: OTC000000000001
+        user_id: ee60d3072f3f4e58a5057fede14cbf86
+        password: SecurePassword123
+        passcode: '536578'
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 0
+              error:
+                type: string
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 0
+              error:
+                type: string

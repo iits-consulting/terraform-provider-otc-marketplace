@@ -1,0 +1,10 @@
+**/*_gen.go
+**/*-spec.json
+.terraformrc
+**/.envrc
+.idea
+**/terraform.tfstate*
+**/*schema.json
+**/.terraform
+**/*.tf
+docs

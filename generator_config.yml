@@ -1,0 +1,74 @@
+provider:
+  name: marketplace
+resources:
+  product_revision:
+    create:
+      path: /product-revisions
+      method: POST
+    read:
+      path: /product-revisions/{id}
+      method: GET
+    delete:
+      path: /product-revisions/{id}
+      method: DELETE
+  product:
+    create:
+      path: /products
+      method: POST
+    read:
+      path: /products/{id}
+      method: GET
+    delete:
+      path: /products/{id}
+      method: DELETE
+  application:
+    read:
+      path: /applications/{id}
+      method: GET
+    create:
+      path: /applications
+      method: POST
+    delete:
+      path: /applications/{id}
+      method: DELETE
+data_sources:
+  product_revisions:
+    read:
+      path: /product-revisions
+      method: GET
+  products:
+    read:
+      path: /products
+      method: GET
+  applications:
+    read:
+      path: /applications
+      method: GET
+  sales_history:
+    read:
+      path: /sales-history
+      method: GET
+  whoami:
+    read:
+      path: /whoami
+      method: GET
+  profile:
+    read:
+      path: /profiles/profile
+      method: GET
+  projects:
+    read:
+      path: /projects
+      method: GET
+  clusters:
+    read:
+      path: /clusters
+      method: GET
+  namespaces:
+    read:
+      path: /namespaces
+      method: GET
+  categories:
+    read:
+      path: /categories
+      method: GET
