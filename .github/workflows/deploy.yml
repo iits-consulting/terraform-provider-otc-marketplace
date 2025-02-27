@@ -2,10 +2,13 @@ name: Deploy Documentation
 
 on:
   push:
-    branches:
-      - main
     tags:
-      - '*'  # Triggers on any tag push
+      - 'v*'
+
+# Releases need permissions to read and write the repository contents.
+# GitHub considers creating releases and uploading assets as writing contents.
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -14,11 +17,15 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          # Allow goreleaser to access older tag information.
+          fetch-depth: 0
 
       - name: Set Up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23.3'
+          go-version-file: 'go.mod'
+          cache: true
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -42,13 +49,21 @@ jobs:
           echo "$(pwd)/tools/tfplugingen-openapi" >> $GITHUB_PATH
           echo "$(pwd)/tools/tfplugingen-framework" >> $GITHUB_PATH
 
-      - name: Run Goreleaser
-        uses: goreleaser/goreleaser-action@v2
-
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@cb9bde2e2525e640591a934b1fd28eef1dcaf5e5 # v6.2.0
+        id: import_gpg
         with:
-          args: release --rm-dist --skip-publish
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@026299872805cb2db698e02dd7fb506a4da5122d # v6.2.0
+        with:
+          args: release --clean
         env:
+          # GitHub sets the GITHUB_TOKEN secret automatically.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
   deploy:
     runs-on: ubuntu-latest
 
