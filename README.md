@@ -1,5 +1,7 @@
 # OTC Marketplace Provider
 
+🚨 Note: This project is still under development and is not recommended for use in production environments. 🚨
+
 ## Example Usage
 
 1. Create a variables.tf
