@@ -1,4 +1,4 @@
-# Data Source: marketplace_namespace
+# Data Source: otc-marketplace_namespace
 
 ## Description
 

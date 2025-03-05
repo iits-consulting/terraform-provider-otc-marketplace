@@ -150,3 +150,5 @@ with open("docs/index.md", "w") as f:
     f.write("\n## Data Sources\n\n")
     for data_source in data_sources:
         f.write(f"- [{data_source}](data-sources/{data_source}.md)\n")
+    with open("README.md", "r") as r:
+        f.write(r.read()+"\n\n")

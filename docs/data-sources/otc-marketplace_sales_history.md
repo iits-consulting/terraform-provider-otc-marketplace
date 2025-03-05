@@ -1,4 +1,4 @@
-# Data Source: marketplace_sales_history
+# Data Source: otc-marketplace_sales_history
 
 ## Description
 

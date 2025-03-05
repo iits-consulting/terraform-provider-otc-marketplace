@@ -1,4 +1,4 @@
-# Data Source: marketplace_profile
+# Data Source: otc-marketplace_profile
 
 ## Description
 

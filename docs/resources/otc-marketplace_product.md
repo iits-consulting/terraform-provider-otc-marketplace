@@ -1,4 +1,4 @@
-# Resource: marketplace_product
+# Resource: otc-marketplace_product
 
 ## Description
 

@@ -1,4 +1,4 @@
-# Data Source: marketplace_application
+# Data Source: otc-marketplace_application
 
 ## Description
 

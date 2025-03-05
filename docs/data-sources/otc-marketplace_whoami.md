@@ -1,4 +1,4 @@
-# Data Source: marketplace_whoami
+# Data Source: otc-marketplace_whoami
 
 ## Description
 

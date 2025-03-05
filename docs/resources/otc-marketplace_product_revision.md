@@ -1,4 +1,4 @@
-# Resource: marketplace_product_revision
+# Resource: otc-marketplace_product_revision
 
 ## Description
 

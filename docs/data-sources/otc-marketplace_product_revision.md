@@ -1,4 +1,4 @@
-# Resource: marketplace_application
+# Data Source: otc-marketplace_product_revision
 
 ## Description
 
@@ -7,47 +7,8 @@ No description available.
 ## Example Usage
 
 ```hcl
-resource "otc-marketplace_application" "example" {
-  application_seller = {
-    description = "example string"
-    id = "example string"
-    name = "example string"
-    state = "example string"
-    support_email = "example string"
-    support_url = "example string"
-  }
-  byol_license = "example string"
-  cluster_id = "example string"
-  configuration = {
-    key = "example string"
-    value = "example string"
-  }
-  created_at = "example string"
-  description = "example string"
-  id = "example string"
-  namespace = "example string"
-  product = {
-    created_at = "example string"
-    eol = true
-    eol_date = "example string"
-    id = "example string"
-    license_type = "example string"
-    llm_hub = {
-      external_api = "example string"
-    }
-    name = "example string"
-    seller = {
-      description = "example string"
-      id = "example string"
-      name = "example string"
-      state = "example string"
-      support_email = "example string"
-      support_url = "example string"
-    }
-    type = "example string"
-    weight = 123
-  }
-  product_revision = {
+data "otc-marketplace_product_revision" "example" {
+  product_revisions = {
     admin_suggestion = "example string"
     byol = {
       activation_url = "example string"
@@ -110,85 +71,12 @@ resource "otc-marketplace_application" "example" {
     }
     version = "example string"
   }
-  product_revision_id = "example string"
-  project_id = "example string"
-  release_name = "example string"
-  state = "example string"
-  username = "example string"
 }
 ```
 
 ## Argument Reference
 
-- `application_seller` - The entity responsible for selling the product on the Marketplace
-  (Computed)
-  - `description` - An optional seller description
-    (Computed)
-  - `id` - Default kind of id for most objects defined in this project
-    (Computed)
-  - `name` - The seller name
-    (Computed)
-  - `state` - State of the Seller. Can be either `active` or `suspended`
-    (Computed)
-  - `support_email` - The seller's email address
-    (Computed)
-  - `support_url` - The seller's website
-    (Computed)
-- `byol_license` - Base64 encoded string containing the license text of the byol license
-  (Optional)
-- `cluster_id` - The cluster ID within which the namespace for deployment can be found
-  (Required)
-- `configuration` - List of Configuration for the deployed application
-  (Optional)
-  - `key` - The key or name of the property to be set
-    (Required)
-  - `value` - The value of the property to be set
-    (Required)
-- `created_at` - Time and date of application deployment
-  (Optional)
-- `description` - user defined application description
-  (Optional)
-- `id` - Default kind of id for most objects defined in this project
-  (Optional)
-- `namespace` - The CCE cluster namespace within which the application should be deployed
-  (Required)
-- `product` - The Product (offering) to be sold on the marketplace
-  (Computed)
-  - `created_at` - The date and time when the product was created
-    (Computed)
-  - `eol` - Set product to EOL. The data will be calculated on backend
-    (Computed)
-  - `eol_date` - End-of-life of the product
-    (Computed)
-  - `id` - Default kind of id for most objects defined in this project
-    (Computed)
-  - `license_type` - The type of license, MVP is only unpaid licenses
-    (Computed)
-  - `llm_hub` - No description available.
-    (Computed)
-    - `external_api` - Link to external API for the LLM
-      (Computed)
-  - `name` - The product name which is shown in the teaser and used as a title on the product offering page
-    (Computed)
-  - `seller` - The entity responsible for selling the product on the Marketplace
-    (Computed)
-    - `description` - An optional seller description
-      (Computed)
-    - `id` - Default kind of id for most objects defined in this project
-      (Computed)
-    - `name` - The seller name
-      (Computed)
-    - `state` - State of the Seller. Can be either `active` or `suspended`
-      (Computed)
-    - `support_email` - The seller's email address
-      (Computed)
-    - `support_url` - The seller's website
-      (Computed)
-  - `type` - The service deployment type in MVP this is container (CCE), post MVP this will expand to other types
-    (Computed)
-  - `weight` - The weight of the product, the higher the number the better the recommendation
-    (Computed)
-- `product_revision` - Combo object made of ProductRevision and the Seller in the ProductRevision
+- `product_revisions` - No description available.
   (Computed)
   - `admin_suggestion` - Admin suggestion is for product revision which got rejected
     (Computed)
@@ -298,13 +186,3 @@ resource "otc-marketplace_application" "example" {
       (Computed)
   - `version` - The version of the release
     (Computed)
-- `product_revision_id` - The revision id of the product to enable deployment for review and draft testing
-  (Required)
-- `project_id` - The project ID within which the CCE cluster for deployment can be found
-  (Required)
-- `release_name` - The name of the Helm release
-  (Optional)
-- `state` - Enum showing the Application's deployment state. Starts `pending` on resource creation and is eventually set to `ready` or `error`
-  (Optional)
-- `username` - (Unsure) Username of the Customer deploying the Application
-  (Optional)

@@ -2,24 +2,22 @@
 
 ## Resources
 
-- [marketplace_application](resources/marketplace_application.md)
-- [marketplace_product](resources/marketplace_product.md)
-- [marketplace_product_revision](resources/marketplace_product_revision.md)
+- [otc-marketplace_application](resources/otc-marketplace_application.md)
+- [otc-marketplace_product](resources/otc-marketplace_product.md)
+- [otc-marketplace_product_revision](resources/otc-marketplace_product_revision.md)
 
 ## Data Sources
 
-- [marketplace_application](data-sources/marketplace_application.md)
-- [marketplace_category](data-sources/marketplace_category.md)
-- [marketplace_cluster](data-sources/marketplace_cluster.md)
-- [marketplace_namespace](data-sources/marketplace_namespace.md)
-- [marketplace_product](data-sources/marketplace_product.md)
-- [marketplace_product_revision](data-sources/marketplace_product_revision.md)
-- [marketplace_profile](data-sources/marketplace_profile.md)
-- [marketplace_project](data-sources/marketplace_project.md)
-- [marketplace_sales_history](data-sources/marketplace_sales_history.md)
-- [marketplace_whoami](data-sources/marketplace_whoami.md)
-
-
+- [otc-marketplace_application](data-sources/otc-marketplace_application.md)
+- [otc-marketplace_category](data-sources/otc-marketplace_category.md)
+- [otc-marketplace_cluster](data-sources/otc-marketplace_cluster.md)
+- [otc-marketplace_namespace](data-sources/otc-marketplace_namespace.md)
+- [otc-marketplace_product](data-sources/otc-marketplace_product.md)
+- [otc-marketplace_product_revision](data-sources/otc-marketplace_product_revision.md)
+- [otc-marketplace_profile](data-sources/otc-marketplace_profile.md)
+- [otc-marketplace_project](data-sources/otc-marketplace_project.md)
+- [otc-marketplace_sales_history](data-sources/otc-marketplace_sales_history.md)
+- [otc-marketplace_whoami](data-sources/otc-marketplace_whoami.md)
 # OTC Marketplace Provider
 
 🚨 Note: This project is still under development and is not recommended for use in production environments. 🚨
@@ -252,12 +250,14 @@ terraform apply
 
 ## Docs
 
-A reference of the resources and how to use them can either be found in this repo's
+A reference of the resources and how to use them can either be found in this repo's 
 [GitHub Pages](https://iits-consulting.github.io/terraform-provider-otc-marketplace/) or in the [docs folder](https://github.com/iits-consulting/terraform-provider-otc-marketplace/tree/main/docs)
 
 ## Contributing
 
-After updating the code, make sure to remove the old docs and run
+After updating the code, make sure to remove the old docs and run 
 `terraform providers schema -json > schema.json && python3 gen_docs.py`  
-to regen the docs (and check to see if `tfplugindocs` now supports the new
+to regen the docs (and check to see if `tfplugindocs` now supports the new 
 protocol, so we don't need to use this!).
+
+

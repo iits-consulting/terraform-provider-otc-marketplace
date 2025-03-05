@@ -1,4 +1,4 @@
-# Data Source: marketplace_category
+# Data Source: otc-marketplace_category
 
 ## Description
 
