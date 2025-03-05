@@ -49,10 +49,9 @@ jobs:
           find ../public -type l -print
           find ../public -xdev -type f -noleaf -links +1 -print
 
-      - name: Upload public artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: public
           path: public
 
       - name: Deploy to GitHub Pages
