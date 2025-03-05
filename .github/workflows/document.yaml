@@ -34,9 +34,9 @@ jobs:
         run: |
           npx create-docusaurus@latest "terraform provider otc-marketplace | Documentation" classic --typescript
           rm -rf "terraform provider otc-marketplace | Documentation"/docs
-          mv docs/resources "docs/01-index.md"
-          mv docs/resources "docs/02-data-sources"
-          mv docs/resources "docs/03-resources"
+          mv "docs/index.md" "docs/01-index.md"
+          mv "docs/data-sources" "docs/02-data-sources"
+          mv "docs/resources" "docs/03-resources"
           mv docs "terraform provider otc-marketplace | Documentation"
           mv docusaurus.config.ts "terraform provider otc-marketplace | Documentation"
           cd "terraform provider otc-marketplace | Documentation"
