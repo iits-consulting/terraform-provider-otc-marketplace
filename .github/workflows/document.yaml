@@ -45,7 +45,6 @@ jobs:
 
       - name: (Debug) Look for symlinks and hard links
         run: |
-          ls -l .automated-rendering/screenshot-capture/screenshots/
           find ../public -type l -print
           find ../public -xdev -type f -noleaf -links +1 -print
 
