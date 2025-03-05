@@ -10,7 +10,7 @@ const config = {
     tagline: "Provider API reference",
     favicon: "https://usercontent.one/wp/iits-consulting.de/wp-content/uploads/2024/03/cropped-favicon-iits-2024-270x270.png",
     url: "https://iits.de",
-    baseUrl: "/terraform-provider-otc-marketplace/",
+    baseUrl: "/terraform-provider-otc-marketplace",
     onBrokenLinks: 'ignore',
     onBrokenMarkdownLinks: 'warn',
     organizationName: "iits",
@@ -22,7 +22,7 @@ const config = {
                 toExtensions: ['html'],
                 redirects: [
                     {
-                        to: '/terraform-provider-otc-marketplace/docs',
+                        to: '/docs',
                         from: ['/'],
                     },
                 ],
@@ -42,7 +42,7 @@ const config = {
             ({
                 docs: {
                     routeBasePath: '/docs',
-                    editUrl: 'https://gitlab.iits.tech/private/otc-marketplace-provider/-/blob/main/terraform-provider-otc-marketplace/',
+                    editUrl: 'https://github.com/iits-consulting/terraform-provider-otc-marketplace',
                     showLastUpdateAuthor: true,
                     showLastUpdateTime: true,
                     editLocalizedFiles: true,
