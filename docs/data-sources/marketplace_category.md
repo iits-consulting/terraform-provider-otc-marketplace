@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_category" "example" {
+data "otc-marketplace_category" "example" {
   categories = {
     description = "example string"
     id = "example string"

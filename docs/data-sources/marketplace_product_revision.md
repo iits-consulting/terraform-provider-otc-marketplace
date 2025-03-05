@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_product_revision" "example" {
+data "otc-marketplace_product_revision" "example" {
   product_revisions = {
     admin_suggestion = "example string"
     byol = {

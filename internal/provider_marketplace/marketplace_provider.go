@@ -138,7 +138,7 @@ func (p *marketplaceProvider) Configure(ctx context.Context, req provider.Config
 }
 
 func (p *marketplaceProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "marketplace"
+	resp.TypeName = "otc-marketplace"
 }
 
 func (p *marketplaceProvider) DataSources(ctx context.Context) []func() datasource.DataSource {

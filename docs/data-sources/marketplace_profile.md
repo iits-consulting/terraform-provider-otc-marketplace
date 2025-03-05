@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_profile" "example" {
+data "otc-marketplace_profile" "example" {
   customer_support_number = "example string"
   description = "example string"
   email = "example string"

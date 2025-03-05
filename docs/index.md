@@ -46,7 +46,7 @@ variable "password" {
 
 2. Create providers.tf
 ```hcl
-provider "marketplace" {
+provider "otc-marketplace" {
 domain_name = var.otc_domain_name
 username    = var.username
 password    = var.password
@@ -72,25 +72,25 @@ locals {
   selected_cluster  = local.clusters["my-cce-clustername"]
 }
 
-data "marketplace_cluster" "all_clusters" {
+data "otc-marketplace_cluster" "all_clusters" {
   project_id = local.selected_project.id
 }
 
-data "marketplace_namespace" "all_namespaces" {
+data "otc-marketplace_namespace" "all_namespaces" {
   project_id = local.selected_project.id
   cluster_id = local.selected_cluster.id
 }
 
-data "marketplace_category" "all_categories" {}
+data "otc-marketplace_category" "all_categories" {}
 
-data "marketplace_project" "all_projects" {}
+data "otc-marketplace_project" "all_projects" {}
 
-data "marketplace_profile" "me" {}
+data "otc-marketplace_profile" "me" {}
 ```
 
 3. create a main.tf file with such a content. In this example we create a otc-prometheus-exporter service
 ```hcl
-resource "marketplace_product" "iits_otc_prometheus_exporter" {
+resource "otc-marketplace_product" "iits_otc_prometheus_exporter" {
   name = "OTC prometheus-exporter" // TODO - will always need to be new (create and delete means this name can never be used again)
   license_type = "opensource"
   type = "container"
@@ -103,7 +103,7 @@ resource "marketplace_product" "iits_otc_prometheus_exporter" {
   }
 }
 
-resource "marketplace_product_revision" "iits_otc_prometheus_exporter_revision" {
+resource "otc-marketplace_product_revision" "iits_otc_prometheus_exporter_revision" {
   depends_on = [marketplace_product.iits_otc_prometheus_exporter]
   categories            = [local.categories["Monitoring"].id]
   product_id            = marketplace_product.iits_otc_prometheus_exporter.id

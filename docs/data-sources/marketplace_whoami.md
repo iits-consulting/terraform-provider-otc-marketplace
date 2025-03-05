@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_whoami" "example" {
+data "otc-marketplace_whoami" "example" {
   domain_name = "example string"
   last_project_id = "example string"
   llm_hub = true

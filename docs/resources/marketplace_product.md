@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-resource "marketplace_product" "example" {
+resource "otc-marketplace_product" "example" {
   active_revision_id = "example string"
   created_at = "example string"
   eol = true

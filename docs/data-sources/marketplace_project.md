@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_project" "example" {
+data "otc-marketplace_project" "example" {
   projects = {
     id = "example string"
     name = "example string"

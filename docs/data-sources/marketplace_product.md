@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_product" "example" {
+data "otc-marketplace_product" "example" {
   products = {
     active_revision_id = "example string"
     created_at = "example string"

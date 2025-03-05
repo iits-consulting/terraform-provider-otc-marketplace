@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_cluster" "example" {
+data "otc-marketplace_cluster" "example" {
   clusters = {
     id = "example string"
     name = "example string"

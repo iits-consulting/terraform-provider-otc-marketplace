@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-resource "marketplace_application" "example" {
+resource "otc-marketplace_application" "example" {
   application_seller = {
     description = "example string"
     id = "example string"

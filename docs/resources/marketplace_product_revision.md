@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-resource "marketplace_product_revision" "example" {
+resource "otc-marketplace_product_revision" "example" {
   admin_suggestion = "example string"
   byol = {
     activation_url = "example string"

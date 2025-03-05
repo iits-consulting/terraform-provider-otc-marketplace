@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_sales_history" "example" {
+data "otc-marketplace_sales_history" "example" {
   sales_history = {
     customer_company_name = "example string"
     customer_company_url = "example string"

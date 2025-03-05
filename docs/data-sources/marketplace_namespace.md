@@ -7,7 +7,7 @@ No description available.
 ## Example Usage
 
 ```hcl
-data "marketplace_namespace" "example" {
+data "otc-marketplace_namespace" "example" {
   cluster_id = "example string"
   namespaces = {
     cluster_id = "example string"
