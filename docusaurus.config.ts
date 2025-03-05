@@ -22,7 +22,7 @@ const config = {
                 toExtensions: ['html'],
                 redirects: [
                     {
-                        to: '/docs',
+                        to: '/docs/index',
                         from: ['/'],
                     },
                 ],
