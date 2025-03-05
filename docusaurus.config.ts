@@ -22,7 +22,7 @@ const config = {
                 toExtensions: ['html'],
                 redirects: [
                     {
-                        to: '/docs',
+                        to: '/terraform-provider-otc-marketplace/docs',
                         from: ['/'],
                     },
                 ],
