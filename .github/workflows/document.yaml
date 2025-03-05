@@ -42,7 +42,8 @@ jobs:
           rm -rf src/pages/*
           npx docusaurus build
           mv build ../public
-          find ../public -type h -print
+          find ../public -type l -print
+          find ../public -xdev -type f -noleaf -links +1 -print
 
       - name: Upload public artifact
         uses: actions/upload-artifact@v4
