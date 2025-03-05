@@ -13,8 +13,8 @@ with open("schema.json", "r") as f:
     schema = json.load(f)
 
 # Create the docs directory structure
-os.makedirs("docs/data-sources", exist_ok=True)
-os.makedirs("docs/resources", exist_ok=True)
+os.makedirs("docs/02-data-sources", exist_ok=True)
+os.makedirs("docs/03-resources", exist_ok=True)
 
 # Initialize lists to keep track of resources and data sources
 resources = []
@@ -123,7 +123,7 @@ for provider_name, provider_schema in schema["provider_schemas"].items():
     for resource_name, resource_schema in provider_schema["resource_schemas"].items():
         resources.append(resource_name)
         generate_markdown(
-            file_path=f"docs/resources/{resource_name}.md",
+            file_path=f"docs/03-resources/{resource_name}.md",
             name=resource_name,
             description=resource_schema.get("description", "No description available."),
             attributes=resource_schema["block"]["attributes"],
@@ -134,7 +134,7 @@ for provider_name, provider_schema in schema["provider_schemas"].items():
     for data_source_name, data_source_schema in provider_schema["data_source_schemas"].items():
         data_sources.append(data_source_name)
         generate_markdown(
-            file_path=f"docs/data-sources/{data_source_name}.md",
+            file_path=f"docs/02-data-sources/{data_source_name}.md",
             name=data_source_name,
             description=data_source_schema.get("description", "No description available."),
             attributes=data_source_schema["block"]["attributes"],
@@ -142,7 +142,7 @@ for provider_name, provider_schema in schema["provider_schemas"].items():
         )
 
 # Generate the index.md file
-with open("docs/index.md", "w") as f:
+with open("docs/01-index.md", "w") as f:
     f.write(f"# Provider: {provider_name}\n\n")
     f.write("## Resources\n\n")
     for resource in resources:

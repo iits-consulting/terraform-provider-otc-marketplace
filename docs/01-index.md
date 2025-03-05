@@ -251,7 +251,7 @@ terraform apply
 ## Docs
 
 A reference of the resources and how to use them can either be found in this repo's 
-[GitHub Pages](https://iits-consulting.github.io/terraform-provider-otc-marketplace/) or in the [docs folder](https://github.com/iits-consulting/terraform-provider-otc-marketplace/tree/main/docs)
+[GitHub Pages](https://iits-consulting.github.io/terraform-provider-otc-marketplace/) [![.github/workflows/document.yaml](https://github.com/iits-consulting/terraform-provider-otc-marketplace/actions/workflows/document.yaml/badge.svg?event=deployment_status)](https://github.com/iits-consulting/terraform-provider-otc-marketplace/actions/workflows/document.yaml) or in the [docs folder](https://github.com/iits-consulting/terraform-provider-otc-marketplace/tree/main/docs)
 
 ## Contributing
 
