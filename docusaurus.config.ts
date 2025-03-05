@@ -42,7 +42,7 @@ const config = {
             ({
                 docs: {
                     routeBasePath: '/docs',
-                    editUrl: 'https://github.com/iits-consulting/terraform-provider-otc-marketplace',
+                    editUrl: 'https://github.com/iits-consulting/terraform-provider-otc-marketplace/tree/main/',
                     showLastUpdateAuthor: true,
                     showLastUpdateTime: true,
                     editLocalizedFiles: true,
