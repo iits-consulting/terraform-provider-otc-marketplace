@@ -48,13 +48,11 @@ jobs:
           name: public
           path: public
 
-      - name: Wait for Artifact (Temporary Workaround™️)
-        run: sleep 10
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
         with:
           artifact_name: public
+          token: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
