@@ -41,3 +41,11 @@ jobs:
         with:
           name: public
           path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+        with:
+          artifact_name: public
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
