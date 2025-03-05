@@ -1,4 +1,4 @@
-name: Deploy Documentation
+name: Build and release
 
 on:
   push:
@@ -69,39 +69,3 @@ jobs:
           # GitHub sets the GITHUB_TOKEN secret automatically.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '23'
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-
-      - name: Build Docusaurus Documentation
-        run: |
-          npx create-docusaurus@latest "terraform provider otc-marketplace | Documentation" classic --typescript
-          rm -rf "terraform provider otc-marketplace | Documentation"/docs
-          mv docs "terraform provider otc-marketplace | Documentation"
-          mv docusaurus.config.ts "terraform provider otc-marketplace | Documentation"
-          cd "terraform provider otc-marketplace | Documentation"
-          npm install
-          npm install @docusaurus/plugin-client-redirects docusaurus-plugin-sass
-          rm -rf src/pages/*
-          npx docusaurus build
-          mv build ../public
-
-      - name: Upload public artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: public
-          path: public
