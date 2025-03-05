@@ -10,7 +10,7 @@ const config = {
     tagline: "Provider API reference",
     favicon: "https://usercontent.one/wp/iits-consulting.de/wp-content/uploads/2024/03/cropped-favicon-iits-2024-270x270.png",
     url: "https://iits.de",
-    baseUrl: "/",
+    baseUrl: "/terraform-provider-otc-marketplace/",
     onBrokenLinks: 'ignore',
     onBrokenMarkdownLinks: 'warn',
     organizationName: "iits",
