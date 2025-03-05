@@ -98,7 +98,7 @@ jobs:
           npm install @docusaurus/plugin-client-redirects docusaurus-plugin-sass
           rm -rf src/pages/*
           npx docusaurus build
-          mv build ../../public
+          mv build ../public
 
       - name: Upload public artifact
         uses: actions/upload-artifact@v4
