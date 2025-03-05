@@ -77,6 +77,7 @@ const config = {
             darkTheme: darkTheme,
             additionalLanguages: [
                 "go",
+                "hcl"
             ],
         },
     },
